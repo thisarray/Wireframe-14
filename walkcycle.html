@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>walkcycle</title>
+  <script src="../jsgame0.js"></script>
+  <style type="text/css" media="screen">
+body {
+  background-color: white;
+  color: black;
+}
+.hidden {
+  display: none;
+}
+#original {
+  margin-left: 1em;
+}
+  </style>
+</head>
+
+<body>
+<section id="imageLoader" class="hidden">
+  <img class="hidden" src="images/stand1.png" alt="stand1">
+  <img class="hidden" src="images/walkleft1.png" alt="walkleft1">
+  <img class="hidden" src="images/walkleft2.png" alt="walkleft2">
+  <img class="hidden" src="images/walkright1.png" alt="walkright1">
+  <img class="hidden" src="images/walkright2.png" alt="walkright2">
+</section>
+
+<main>
+<h1>walkcycle</h1>
+
+<canvas id="screen">
+The game screen appears here if your browser supports the Canvas API.
+</canvas>
+<section id="controls">
+  <button type="button" id="reset">Reset</button>
+  <button type="button" id="pause">Pause</button>
+</section>
+
+<h2>Attribution</h2>
+
+<p><a href="https://wireframe.raspberrypi.org/issues/14">Create a Donkey Kong-style walk cycle, pages 40-41, by Rik Cross</a>.</p>
+
+<p>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>.</p>
+
+<h2>Original Python code</h2>
+
+<pre id="original"><code>
+# the Player() class is a subclass of Actor()
+class Player(Actor):
+    def __init__(self, **kwargs):
+        super().__init__(pos = (200,100), image=&#x27;stand1&#x27;, **kwargs)
+        self.state = &#x27;stand&#x27;
+        self.animationdelay = 10
+        self.animationtimer = 0
+        # a list of image for each player state
+        self.images = { &#x27;stand&#x27;     : [&#x27;stand1&#x27;],
+                        &#x27;walkleft&#x27;  : [&#x27;walkleft1&#x27;,&#x27;walkleft2&#x27;],
+                        &#x27;walkright&#x27; : [&#x27;walkright1&#x27;,&#x27;walkright2&#x27;]
+                      }
+        # the index of the current image in the image list
+        self.animationindex = 0
+
+    def update(self):
+
+        # update position and state based on keyboard input
+        if keyboard.left:
+            self.x -= 1
+            self.state = &#x27;walkleft&#x27;
+        elif keyboard.right:
+            self.x += 1
+            self.state = &#x27;walkright&#x27;
+        else:
+            self.state = &#x27;stand&#x27;
+
+        # update animation by incrementing timer
+        # and updating sprite image if timer limit reached
+        self.animationtimer += 1
+        if self.animationtimer &gt;= self.animationdelay:
+            self.animationtimer = 0
+            self.animationindex += 1
+            if self.animationindex &gt; len(self.images[self.state]) - 1:
+                self.animationindex = 0
+            self.image = self.images[self.state][self.animationindex]
+
+# create a new player
+p = Player()
+
+def update():
+    p.update()
+
+def draw():
+    screen.clear()
+    p.draw()
+</code></pre>
+</main>
+
+<script>
+// the Player() class is a subclass of Actor()
+class Player extends Actor {
+  constructor() {
+    super('stand1');
+    this.pos = [200, 100];
+    this.state = 'stand';
+    this.animationdelay = 10;
+    this.animationtimer = 0;
+    // a list of image for each player state
+    this.images = new Map([
+      ['stand', ['stand1']],
+      ['walkleft', ['walkleft1', 'walkleft2']],
+      ['walkright', ['walkright1', 'walkright2']]
+    ]);
+    // the index of the current image in the image list
+    this.animationindex = 0;
+  }
+
+  update() {
+    // update position and state based on keyboard input
+    if (keyboard[keys.LEFT]) {
+      this.posx -= 1;
+      this.state = 'walkleft';
+    }
+    else if (keyboard[keys.RIGHT]) {
+      this.posx += 1;
+      this.state = 'walkright';
+    }
+    else {
+      this.state = 'stand';
+    }
+
+    // update animation by incrementing timer
+    // and updating sprite image if timer limit reached
+    this.animationtimer += 1;
+    if (this.animationtimer >= this.animationdelay) {
+      this.animationtimer = 0;
+      this.animationindex += 1;
+      if (this.animationindex > (this.images.get(this.state).length - 1)) {
+        this.animationindex = 0;
+      }
+      this.name = this.images.get(this.state)[this.animationindex];
+    }
+  }
+}
+
+var p;
+
+function reset() {
+  // create a new player
+  p = new Player();
+}
+
+function update() {
+  p.update();
+}
+
+function draw() {
+  screen.clear();
+  p.draw();
+}
+
+window.addEventListener('load', (event) => {
+  images.LOAD('#imageLoader img');
+  reset();
+  screen.set_mode('#screen', '#reset', '#pause');
+});
+</script>
+</body>
+
+</html>
